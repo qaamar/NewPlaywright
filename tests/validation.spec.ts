@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.only('Login', async ({ page }) => {
+test('Login', async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/AutomationPractice/');
 
     //henldanje elemenata da li su visible ili nisu
