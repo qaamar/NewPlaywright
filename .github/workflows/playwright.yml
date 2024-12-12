@@ -1,7 +1,7 @@
 name: New Playwright Test
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, testBranch]
   pull_request:
     branches: [main, master]
 jobs:
