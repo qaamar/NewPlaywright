@@ -17,7 +17,7 @@ test('First test', async ({ page, browser }) => {
     await expect(page).toHaveTitle('Spotlite');
     //Login
     await page.locator('[type=text]').fill('akds');
-    await page.locator('[type=password]').fill('1234');
+    await page.locator('[type=password]').fill('123456');
     await page.locator(".MuiButton-label").click();
     //Navigate to Arrivals and departures
     await page.getByRole('button', { name: 'Arrive/Depart trailers' }).click();
