@@ -12,7 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.49.0",
-    "@types/node": "^22.1.0"
+    "@types/node": "^22.10.2"
   },
   "dependencies": {
     "eslint": "^9.13.0"
