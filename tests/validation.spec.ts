@@ -22,4 +22,28 @@ test('Login', async ({ page }) => {
     const textCheck = await frame.locator('h1').textContent();
     expect(textCheck).toContain('LEARNING PATHS');
 
+});
+
+test('Screenshots', async ({ page }) => {
+    await page.goto('https://rahulshettyacademy.com/AutomationPractice/');
+
+    await expect(page.locator('#displayed-text')).toBeVisible();
+    await page.locator('#hide-textbox').click();
+    await expect(page.locator('#displayed-text')).toBeHidden();
+    await page.screenshot({ path: 'screenshot.png', fullPage: true });
+
+});
+
+test('Aria visual testing', async ({page})=>{
+
+await page.goto('https://preprod-app.spotlightyms.com/login');
+await expect(page.locator('#root')).toMatchAriaSnapshot(`
+    - img "Logo"
+    - heading "Sign In" [level=6]
+    - text: Username
+    - textbox
+    - text: Password
+    - textbox
+    - button "Login"
+    `);
 })
