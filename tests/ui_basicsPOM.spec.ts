@@ -89,11 +89,11 @@ test('UI basics', async ({ page }) => {
     //await expect(page.locator("sdasda")) 
 })
 
-test.only('E2E test with POM', async ({ page }) => {
+test('E2E test with POM', async ({ page }) => {
     const login = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
     const cartPage = new CartPage(page);
-const checkoutPage = new CheckoutPage(page);
+    const checkoutPage = new CheckoutPage(page);
 
     const username = 'amarrkadic@gmail.com';
     const password = 'Neznamja1990!';
@@ -107,7 +107,7 @@ const checkoutPage = new CheckoutPage(page);
     //Navigate to cart and assert
     await dashboardPage.navigateToCart();
     await expect(page.getByText(productName)).toBeVisible();
-    
+
     //Proceed to checkout
     await cartPage.clickCheckoutButton();
     await cartPage.isProductAddedToCart();
