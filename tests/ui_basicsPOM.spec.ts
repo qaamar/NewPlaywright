@@ -1,7 +1,10 @@
 import exp from 'constants';
 
 const { test, expect } = require('@playwright/test');
-import { Login } from '../page/Login';
+import { LoginPage } from '../page/LoginPage';
+import { DashboardPage } from '../page/DashboardPage';
+import { CartPage } from '../page/CartPage';
+import { CheckoutPage } from '../page/CheckoutPage';
 
 // kod trazenja selektora koristi ovo
 // za ID koristimo #id
@@ -86,72 +89,52 @@ test('UI basics', async ({ page }) => {
     //await expect(page.locator("sdasda")) 
 })
 
-test('E2E test with POM', async ({ page }) => {
-    const login = new Login(page);
+test.only('E2E test with POM', async ({ page }) => {
+    const login = new LoginPage(page);
+    const dashboardPage = new DashboardPage(page);
+    const cartPage = new CartPage(page);
+const checkoutPage = new CheckoutPage(page);
+
     const username = 'amarrkadic@gmail.com';
     const password = 'Neznamja1990!';
-    login.goto();
-    login.validLogin(username, password);
+    await login.goto();
+    await login.validLogin(username, password);
 
-    //const product = page.()
     const productName = 'ADIDAS ORIGINAL';
     await page.waitForLoadState('networkidle') //not the best practice
-    const product = await page.locator(".card-body");
-    const count = await product.count();
-    let productFound = false;
-    for (let i = 0; i < count; i++) {
-        if (await product.nth(i).locator("b").textContent() === productName) {
-            await product.nth(i).locator("text= Add To Cart").click();
-            console.log('Product found');
-            productFound = true;
-            break;
-        }
-    }
-    if (!productFound) { throw new Error('Failed to find product'); }
+    await dashboardPage.searchProducts(productName);
+
     //Navigate to cart and assert
-    await page.getByRole('button', { name: '   Cart' }).click();
+    await dashboardPage.navigateToCart();
     await expect(page.getByText(productName)).toBeVisible();
+    
     //Proceed to checkout
-    await page.getByRole('button', { name: 'Checkout❯' }).click();
-    await expect(page.getByLabel('Product Added To Cart')).toBeVisible();
+    await cartPage.clickCheckoutButton();
+    await cartPage.isProductAddedToCart();
+
     //Checkout form
-    await page.getByPlaceholder('Select Country').pressSequentially('Ind', { delay: 100 });
-    const dropdown = page.locator(".ta-results.list-group.ng-star-inserted");
-    await dropdown.waitFor(); // Wait for the dropdown to be visible
+    await checkoutPage.selectCountry('Ind');
+    await checkoutPage.verifyEmail(username);
+    await checkoutPage.clickOnPlaceOrder();
 
-    const countryOptions = await dropdown.locator("button");
-    const countcountries = await countryOptions.count();
-
-    for (let i = 0; i < countcountries; i++) {
-        const text = await countryOptions.nth(i).textContent();
-        if (text.trim() === "India") { // Use trim() to remove extra spaces
-            await countryOptions.nth(i).click();
-            console.log('Country selected');
-            break;
-        }
-    }
-
-    const emailField = page.locator('//*[@class="user__name mt-5"]//label')
-    await expect(emailField).toHaveText(username);
-    await page.getByText('Place Order').click();
-    await page.pause();
+    //Summary page
     await expect(page.locator(".hero-primary")).toHaveText(" Thankyou for the order. ");
     const orderId = await page.locator(".em-spacer-1 .ng-star-inserted").textContent()
-    console.log(orderId);
+    //console.log(orderId);
     await page.getByRole('button', { name: '   ORDERS' }).click();
     await page.locator("tbody").waitFor();
     const orderTable = await page.locator("tbody tr");
     for (let i = 0; i < await orderTable.count(); i++) {
         const orderIdInTable = await orderTable.nth(i).locator("th").textContent();
         if (orderId.includes(orderIdInTable)) {
-            console.log(orderIdInTable);
+            //console.log(orderIdInTable);
             await orderTable.nth(i).locator("button").first().click();
             break;
         }
     }
     const summaryPageOrderId = await page.locator(".col-text.-main").textContent();
     const trimmedOrderId = orderId.trim().replace(/^\|+/, '').replace(/\|+$/, '').trim(); //had to trim the value as expected string wasn't enough
-    console.log(trimmedOrderId);
+    //console.log(trimmedOrderId);
     expect(summaryPageOrderId.includes(trimmedOrderId)).toBeTruthy();
 
 
