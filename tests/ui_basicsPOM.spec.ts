@@ -1,10 +1,14 @@
 import exp from 'constants';
 
 const { test, expect } = require('@playwright/test');
+const { customtest } = require('../utils/test-base');
 import { LoginPage } from '../page/LoginPage';
 import { DashboardPage } from '../page/DashboardPage';
 import { CartPage } from '../page/CartPage';
 import { CheckoutPage } from '../page/CheckoutPage';
+import { OrdersPage } from '../page/OrdersPage';
+const dataSet = JSON.parse(JSON.stringify(require("../utils/placeOrderTestData.json")));
+
 
 // kod trazenja selektora koristi ovo
 // za ID koristimo #id
@@ -90,23 +94,25 @@ test('UI basics', async ({ page }) => {
 })
 
 test('E2E test with POM', async ({ page }) => {
+
+    //#region Objects
     const login = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
     const cartPage = new CartPage(page);
     const checkoutPage = new CheckoutPage(page);
+    const ordersPage = new OrdersPage(page);
 
-    const username = 'amarrkadic@gmail.com';
-    const password = 'Neznamja1990!';
+    //#endregion
+
     await login.goto();
-    await login.validLogin(username, password);
+    await login.validLogin(dataSet.username, dataSet.password);
 
-    const productName = 'ADIDAS ORIGINAL';
     await page.waitForLoadState('networkidle') //not the best practice
-    await dashboardPage.searchProducts(productName);
+    await dashboardPage.searchProducts(dataSet.productName);
 
     //Navigate to cart and assert
     await dashboardPage.navigateToCart();
-    await expect(page.getByText(productName)).toBeVisible();
+    await expect(page.getByText(dataSet.productName)).toBeVisible();
 
     //Proceed to checkout
     await cartPage.clickCheckoutButton();
@@ -114,33 +120,43 @@ test('E2E test with POM', async ({ page }) => {
 
     //Checkout form
     await checkoutPage.selectCountry('Ind');
-    await checkoutPage.verifyEmail(username);
+    await checkoutPage.verifyEmail(dataSet.username);
     await checkoutPage.clickOnPlaceOrder();
 
     //Summary page
-    await expect(page.locator(".hero-primary")).toHaveText(" Thankyou for the order. ");
-    const orderId = await page.locator(".em-spacer-1 .ng-star-inserted").textContent()
+    await cartPage.verifyThankYouMsg();
+    const orderId = await cartPage.getOrderId();
     //console.log(orderId);
-    await page.getByRole('button', { name: '   ORDERS' }).click();
+    await ordersPage.clickOnOrdersButton();
+
     await page.locator("tbody").waitFor();
-    const orderTable = await page.locator("tbody tr");
-    for (let i = 0; i < await orderTable.count(); i++) {
-        const orderIdInTable = await orderTable.nth(i).locator("th").textContent();
-        if (orderId.includes(orderIdInTable)) {
-            //console.log(orderIdInTable);
-            await orderTable.nth(i).locator("button").first().click();
-            break;
-        }
-    }
-    const summaryPageOrderId = await page.locator(".col-text.-main").textContent();
-    const trimmedOrderId = orderId.trim().replace(/^\|+/, '').replace(/\|+$/, '').trim(); //had to trim the value as expected string wasn't enough
-    //console.log(trimmedOrderId);
-    expect(summaryPageOrderId.includes(trimmedOrderId)).toBeTruthy();
-
-
-    //const successText = await page.locator('.hero-primary');
+    await ordersPage.verifyOrderIdAndClickOnFirst(orderId);
+    await ordersPage.verifyOrderSummary();
+   
 
 
 
+})
+
+customtest('E2E using fixtures', async ({ page,testDataForOrder }) => {
+
+    //#region Objects
+    const login = new LoginPage(page);
+    const dashboardPage = new DashboardPage(page);
+    const cartPage = new CartPage(page);
+    const checkoutPage = new CheckoutPage(page);
+    const ordersPage = new OrdersPage(page);
+
+    //#endregion
+
+    await login.goto();
+    await login.validLogin(testDataForOrder.username, testDataForOrder.password);
+
+    await page.waitForLoadState('networkidle') //not the best practice
+    await dashboardPage.searchProducts(testDataForOrder.productName);
+
+    //Navigate to cart and assert
+    await dashboardPage.navigateToCart();
+    await expect(page.getByText(testDataForOrder.productName)).toBeVisible();
 })
 
