@@ -130,7 +130,7 @@ test('E2E test with POM', async ({ page }) => {
 
 })
 
-customtest.only('E2E using fixtures', async ({ page,testDataForOrder }) => {
+customtest('E2E using fixtures', async ({ page,testDataForOrder }) => {
 
     //#region Objects
     const {login, dashboardPage} = Pages(page);
