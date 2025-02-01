@@ -2,11 +2,7 @@ import exp from 'constants';
 
 const { test, expect } = require('@playwright/test');
 const { customtest } = require('../utils/test-base');
-import { LoginPage } from '../page/LoginPage';
-import { DashboardPage } from '../page/DashboardPage';
-import { CartPage } from '../page/CartPage';
-import { CheckoutPage } from '../page/CheckoutPage';
-import { OrdersPage } from '../page/OrdersPage';
+import { Pages } from '../page/Pages';
 const dataSet = JSON.parse(JSON.stringify(require("../utils/placeOrderTestData.json")));
 
 
@@ -96,11 +92,7 @@ test('UI basics', async ({ page }) => {
 test('E2E test with POM', async ({ page }) => {
 
     //#region Objects
-    const login = new LoginPage(page);
-    const dashboardPage = new DashboardPage(page);
-    const cartPage = new CartPage(page);
-    const checkoutPage = new CheckoutPage(page);
-    const ordersPage = new OrdersPage(page);
+    const {login, dashboardPage, cartPage, checkoutPage, ordersPage} = Pages(page);
 
     //#endregion
 
@@ -138,15 +130,10 @@ test('E2E test with POM', async ({ page }) => {
 
 })
 
-customtest('E2E using fixtures', async ({ page,testDataForOrder }) => {
+customtest.only('E2E using fixtures', async ({ page,testDataForOrder }) => {
 
     //#region Objects
-    const login = new LoginPage(page);
-    const dashboardPage = new DashboardPage(page);
-    const cartPage = new CartPage(page);
-    const checkoutPage = new CheckoutPage(page);
-    const ordersPage = new OrdersPage(page);
-
+    const {login, dashboardPage} = Pages(page);
     //#endregion
 
     await login.goto();
