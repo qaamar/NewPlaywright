@@ -14,7 +14,7 @@ test.beforeAll(async () => {
 
 })
 
-test('E2E with API login', async ({ page }) => {
+test('@API E2E with API login', async ({ page }) => {
 
     
     await page.addInitScript(`window.localStorage.setItem('token', '${response.token}')`)
