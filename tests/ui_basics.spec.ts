@@ -44,7 +44,7 @@ test('First test', async ({ page, browser }) => {
         return dateTimeString;
     }
 })
-test('RahulTestPage', async ({ page }) => {
+test('@ui RahulTestPage', async ({ page }) => {
     const usernNameField = page.getByLabel('Username:');
     const passwordField = page.getByLabel('Password:');
     const submitButton = page.getByRole('button', { name: 'Sign In' });
@@ -92,7 +92,7 @@ test('E2E test', async ({ page }) => {
 
     //const product = page.()
     const email = 'amarrkadic@gmail.com';
-    const productName = 'ADIDAS ORIGINAL';
+    const productName = 'IPHONE 13 PRO';
     await page.goto('https://rahulshettyacademy.com/client/');
     await usernNameField.fill(email);
     await passwordField.fill('Neznamja1990!');

@@ -15,7 +15,7 @@ export const customtest = baseTest.extend<{
     await use({
       username: "amarrkadic@gmail.com",
       password: "Neznamja1990!",
-      productName: "ADIDAS ORIGINAL",
+      productName: "IPHONE 13 PRO",
     });
   },
 });

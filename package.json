@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": " npx playwright test tests/webApiTesting.spec.ts --headed",
+    "tests": " npx playwright test ",
+    "api-test": "npx playwright test --grep @API",
     "lint": "eslint --ext .js,.ts ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.49.0",
+    "@playwright/test": "^1.50.0",
     "@types/node": "^22.10.2"
   },
   "dependencies": {
