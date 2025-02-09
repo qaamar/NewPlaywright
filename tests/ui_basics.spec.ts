@@ -13,7 +13,6 @@ test('First test', async ({ page, browser }) => {
     // const context = await browser.newContext(); //this helps opening new clear browser
     //const newPage = await context.newPage();
     await page.goto('https://uat-app.spotlightyms.com/login');
-    console.log(await page.title());
     await expect(page).toHaveTitle('Spotlite');
     //Login
     await page.locator('[type=text]').fill('akds');
@@ -24,7 +23,6 @@ test('First test', async ({ page, browser }) => {
     //Arrive a trailer
     await page.locator('.MuiGrid-root > div:nth-child(2) > .MuiButtonBase-root').click();
     const currentDateTime = getCurrentDateTimeString();
-    console.log(`TAK${currentDateTime}`);
 
     function getCurrentDateTimeString() {
         const now = new Date();
@@ -53,11 +51,6 @@ test('@ui RahulTestPage', async ({ page }) => {
     await usernNameField.fill('rahulshettyacademy');
     await passwordField.fill('learning');
     await submitButton.click();
-    //await page.pause()
-    //console.log(await cardTitles.nth(0).textContent())
-
-    const allTitels = await cardTitles.allTextContents();
-    console.log(allTitels);
 })
 
 test('UI basics', async ({ page }) => {
@@ -70,19 +63,14 @@ test('UI basics', async ({ page }) => {
     await passwordField.fill('learning');
     const dropdown = page.locator("select.form-control");
     const tAndCbox = page.getByLabel('I Agree to the terms and')
-    await page.pause();
     await tAndCbox.click()
     await expect(page.getByLabel('I Agree to the terms and')).toBeChecked() //action is outside
-    await page.pause();
     await tAndCbox.uncheck()
     expect(await tAndCbox.isChecked()).toBeFalsy(); //await is used inside because action is inside
-    await page.pause();
     await expect(blinkingText).toHaveAttribute("class", "blinkingText")
     await dropdown.selectOption("consult")
     await submitButton.click();
 
-    //await page.pause();
-    //await expect(page.locator("sdasda")) 
 })
 
 test('E2E test', async ({ page }) => {
@@ -92,7 +80,7 @@ test('E2E test', async ({ page }) => {
 
     //const product = page.()
     const email = 'amarrkadic@gmail.com';
-    const productName = 'IPHONE 13 PRO';
+    const productName = 'IPHONE';
     await page.goto('https://rahulshettyacademy.com/client/');
     await usernNameField.fill(email);
     await passwordField.fill('Neznamja1990!');
@@ -102,9 +90,8 @@ test('E2E test', async ({ page }) => {
     const count = await product.count();
     let productFound = false;
     for (let i = 0; i < count; i++) {
-        if (await product.nth(i).locator("b").textContent() === productName) {
+        if (await product.nth(i).locator("b").textContent() === productName.toLowerCase()) {
             await product.nth(i).locator("text= Add To Cart").click();
-            console.log('Product found');
             productFound = true;
             break;
         }
@@ -112,7 +99,7 @@ test('E2E test', async ({ page }) => {
     if (!productFound) { throw new Error('Failed to find product'); }
     //Navigate to cart and assert
     await page.getByRole('button', { name: '   Cart' }).click();
-    await expect(page.getByText(productName)).toBeVisible();
+    await expect(page.getByText(productName.toLowerCase())).toBeVisible();
     //Proceed to checkout
     await page.getByRole('button', { name: 'Checkout❯' }).click();
     await expect(page.getByLabel('Product Added To Cart')).toBeVisible();
@@ -128,38 +115,27 @@ test('E2E test', async ({ page }) => {
         const text = await countryOptions.nth(i).textContent();
         if (text.trim() === "India") { // Use trim() to remove extra spaces
             await countryOptions.nth(i).click();
-            console.log('Country selected');
             break;
         }
     }
 
     const emailField = page.locator('//*[@class="user__name mt-5"]//label')
-    await expect(emailField).toHaveText(email);
+    expect(emailField).toHaveText(email);
     await page.getByText('Place Order').click();
-    await page.pause();
     await expect(page.locator(".hero-primary")).toHaveText(" Thankyou for the order. ");
     const orderId = await page.locator(".em-spacer-1 .ng-star-inserted").textContent()
-    console.log(orderId);
     await page.getByRole('button', { name: '   ORDERS' }).click();
     await page.locator("tbody").waitFor();
     const orderTable = await page.locator("tbody tr");
     for (let i = 0; i < await orderTable.count(); i++) {
         const orderIdInTable = await orderTable.nth(i).locator("th").textContent();
         if (orderId.includes(orderIdInTable)) {
-            console.log(orderIdInTable);
             await orderTable.nth(i).locator("button").first().click();
             break;
         }
     }
 const summaryPageOrderId = await page.locator(".col-text.-main").textContent();
 const trimmedOrderId = orderId.trim().replace(/^\|+/, '').replace(/\|+$/, '').trim(); //had to trim the value as expected string wasn't enough
-console.log(trimmedOrderId);
 expect(summaryPageOrderId.includes(trimmedOrderId)).toBeTruthy();
-
-
-    //const successText = await page.locator('.hero-primary');
-
-
-
 })
 

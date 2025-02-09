@@ -17,7 +17,6 @@ test('First test', async ({ page, browser }) => {
     // const context = await browser.newContext(); //this helps opening new clear browser
     //const newPage = await context.newPage();
     await page.goto('https://uat-app.spotlightyms.com/login');
-    console.log(await page.title());
     await expect(page).toHaveTitle('Spotlite');
     //Login
     await page.locator('[type=text]').fill('akds');
@@ -28,7 +27,6 @@ test('First test', async ({ page, browser }) => {
     //Arrive a trailer
     await page.locator('.MuiGrid-root > div:nth-child(2) > .MuiButtonBase-root').click();
     const currentDateTime = getCurrentDateTimeString();
-    console.log(`TAK${currentDateTime}`);
 
     function getCurrentDateTimeString() {
         const now = new Date();
@@ -57,11 +55,6 @@ test('RahulTestPage', async ({ page }) => {
     await usernNameField.fill('rahulshettyacademy');
     await passwordField.fill('learning');
     await submitButton.click();
-    //await page.pause()
-    //console.log(await cardTitles.nth(0).textContent())
-
-    const allTitels = await cardTitles.allTextContents();
-    console.log(allTitels);
 })
 
 test('UI basics', async ({ page }) => {
@@ -74,25 +67,20 @@ test('UI basics', async ({ page }) => {
     await passwordField.fill('learning');
     const dropdown = page.locator("select.form-control");
     const tAndCbox = page.getByLabel('I Agree to the terms and')
-    await page.pause();
     await tAndCbox.click()
     await expect(page.getByLabel('I Agree to the terms and')).toBeChecked() //action is outside
-    await page.pause();
     await tAndCbox.uncheck()
     expect(await tAndCbox.isChecked()).toBeFalsy(); //await is used inside because action is inside
-    await page.pause();
     await expect(blinkingText).toHaveAttribute("class", "blinkingText")
     await dropdown.selectOption("consult")
     await submitButton.click();
 
-    //await page.pause();
-    //await expect(page.locator("sdasda")) 
 })
 
 test('E2E test with POM', async ({ page }) => {
 
     //#region Objects
-    const {login, dashboardPage, cartPage, checkoutPage, ordersPage} = Pages(page);
+    const { login, dashboardPage, cartPage, checkoutPage, ordersPage } = Pages(page);
 
     //#endregion
 
@@ -100,11 +88,11 @@ test('E2E test with POM', async ({ page }) => {
     await login.validLogin(dataSet.username, dataSet.password);
 
     await page.waitForLoadState('networkidle') //not the best practice
-    await dashboardPage.searchProducts(dataSet.productName);
+    await dashboardPage.searchProducts(dataSet.productName.toLowerCase());
 
     //Navigate to cart and assert
     await dashboardPage.navigateToCart();
-    await expect(page.getByText(dataSet.productName)).toBeVisible();
+    await expect(page.getByText(dataSet.productName.toLowerCase())).toBeVisible();
 
     //Proceed to checkout
     await cartPage.clickCheckoutButton();
@@ -118,32 +106,42 @@ test('E2E test with POM', async ({ page }) => {
     //Summary page
     await cartPage.verifyThankYouMsg();
     const orderId = await cartPage.getOrderId();
-    //console.log(orderId);
     await ordersPage.clickOnOrdersButton();
 
     await page.locator("tbody").waitFor();
     await ordersPage.verifyOrderIdAndClickOnFirst(orderId);
     await ordersPage.verifyOrderSummary();
-   
+
 
 
 
 })
 
-customtest('E2E using fixtures', async ({ page,testDataForOrder }) => {
+customtest('E2E using fixtures', async ({ page, testDataForOrder }) => {
 
     //#region Objects
-    const {login, dashboardPage} = Pages(page);
+    const { login, dashboardPage } = Pages(page);
     //#endregion
 
     await login.goto();
     await login.validLogin(testDataForOrder.username, testDataForOrder.password);
 
     await page.waitForLoadState('networkidle') //not the best practice
-    await dashboardPage.searchProducts(testDataForOrder.productName);
+    await dashboardPage.searchProducts(testDataForOrder.productName.toLowerCase());
 
     //Navigate to cart and assert
     await dashboardPage.navigateToCart();
-    await expect(page.getByText(testDataForOrder.productName)).toBeVisible();
+    await expect(page.getByText(testDataForOrder.productName.toLowerCase())).toBeVisible();
 })
+
+test('Sidebar test', async ({ page }) => {
+
+    const { login, dashboardPage } = Pages(page);
+
+    await login.goto();
+    await login.validLogin(dataSet.username, dataSet.password);
+    await page.waitForLoadState('networkidle') //not the best practice
+    await dashboardPage.checkCategory(dataSet.categoryName);;
+
+});
 
