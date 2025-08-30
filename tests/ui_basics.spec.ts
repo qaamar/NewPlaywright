@@ -85,7 +85,11 @@ test('E2E test', async ({ page }) => {
     await usernNameField.fill(email);
     await passwordField.fill('Neznamja1990!');
     await loginButton.click();
-    await page.waitForLoadState('networkidle') //not the best practice
+    await page.waitForResponse(res =>
+        res.url().includes('api/ecom/product/get-all-products') &&
+        res.request().method() === 'POST' &&
+        res.status() === 200
+    );
     const product = await page.locator(".card-body");
     const count = await product.count();
     let productFound = false;

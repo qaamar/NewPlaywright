@@ -87,7 +87,12 @@ test('E2E test with POM', async ({ page }) => {
     await login.goto();
     await login.validLogin(dataSet.username, dataSet.password);
 
-    await page.waitForLoadState('networkidle') //not the best practice
+    await page.waitForResponse(res =>
+    res.url().includes('api/ecom/product/get-all-products') &&
+    res.request().method() === 'POST' &&
+    res.status() === 200
+    );
+    await page.waitForRequest(() => page.locator(".card").first().isVisible())
     await dashboardPage.searchProducts(dataSet.productName.toLowerCase());
 
     //Navigate to cart and assert
@@ -122,13 +127,16 @@ customtest('E2E using fixtures', async ({ page, testDataForOrder }) => {
     //#region Objects
     const { login, dashboardPage } = Pages(page);
     //#endregion
-
     await login.goto();
     await login.validLogin(testDataForOrder.username, testDataForOrder.password);
 
-    await page.waitForLoadState('networkidle') //not the best practice
+    await page.waitForResponse(res =>
+        res.url().includes('api/ecom/product/get-all-products') &&
+        res.request().method() === 'POST' &&
+        res.status() === 200
+    );
     await dashboardPage.searchProducts(testDataForOrder.productName.toLowerCase());
-
+ 
     //Navigate to cart and assert
     await dashboardPage.navigateToCart();
     await expect(page.getByText(testDataForOrder.productName.toLowerCase())).toBeVisible();
@@ -140,7 +148,11 @@ test('Sidebar test', async ({ page }) => {
 
     await login.goto();
     await login.validLogin(dataSet.username, dataSet.password);
-    await page.waitForLoadState('networkidle') //not the best practice
+    await page.waitForResponse(res =>
+    res.url().includes('api/ecom/product/get-all-products') &&
+    res.request().method() === 'POST' &&
+    res.status() === 200
+    );
     await dashboardPage.checkCategory(dataSet.categoryName);;
 
 });
