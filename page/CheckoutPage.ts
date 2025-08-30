@@ -26,7 +26,6 @@ export class CheckoutPage {
             const text = await countryOptions.nth(i).textContent();
             if ((text?.trim() ?? '' )=== "India") { // Use trim() to remove extra spaces
                 await countryOptions.nth(i).click();
-                console.log('Country selected');
                 break;
             }
         }
